@@ -47,14 +47,20 @@ sudo ln -s ${ADMESH_DIR}/admesh /usr/bin/admesh
 
 start_test validate_stls "Validate STLs"
 
+found_error=0
+
 if [ "$GIT_PULL_REQUEST" == "" ]; then
   # Regular branch push, test all files
-  find ${BASE_DIR} -type f -iname "*.STL" | xargs -n 1 -I {} ${BASE_DIR}/.github_scripts/workflows/validate-file.py {} || exit 255
+  find ${BASE_DIR} -type f -iname "*.STL" | xargs -n 1 -I {} ${BASE_DIR}/.github_scripts/workflows/validate-file.py {} || found_error=1
 else
   cd ${BASE_DIR}
   git fetch --quiet
   # Compare head against the branch to merge into (PR)
-  git diff --name-only --diff-filter=AMR -R HEAD origin/${GIT_PR_BASE_BRANCH} | xargs -n 1 -I {} ${BASE_DIR}/.github_scripts/workflows/validate-file.py ${BASE_DIR}/{} || exit 255
+  git diff --name-only --diff-filter=AMR -R HEAD origin/${GIT_PR_BASE_BRANCH} | xargs -n 1 -I {} ${BASE_DIR}/.github_scripts/workflows/validate-file.py ${BASE_DIR}/{} || found_error=1
+fi
+
+if [ $found_error == 1 ]; then 
+  exit 255
 fi
 
 finish_test validate_stls "Validate STLs"
