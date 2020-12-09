@@ -51,12 +51,12 @@ found_error=0
 
 if [ "$GIT_PULL_REQUEST" == "" ]; then
   # Regular branch push, test all files
-  find ${BASE_DIR} -type f -iname "*.STL" | xargs -n 1 -I {} bash -c '${BASE_DIR}/.github_scripts/workflows/validate-file.py "{}" || touch failed'
+  find ${BASE_DIR} -type f -iname "*.STL" | xargs -n 1 -I {} bash -c "${BASE_DIR}/.github_scripts/workflows/validate-file.py '{}' || touch failed"
 else
   cd ${BASE_DIR}
   git fetch --quiet
   # Compare head against the branch to merge into (PR)
-  git diff --name-only --diff-filter=AMR -R HEAD origin/${GIT_PR_BASE_BRANCH} | xargs -n 1 -I {} bash -c '${BASE_DIR}/.github_scripts/workflows/validate-file.py "{}" || touch failed'
+  git diff --name-only --diff-filter=AMR -R HEAD origin/${GIT_PR_BASE_BRANCH} | xargs -n 1 -I {} bash -c "${BASE_DIR}/.github_scripts/workflows/validate-file.py '{}' || touch failed"
 fi
 
 if [ -f "failed" ]; then
