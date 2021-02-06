@@ -77,5 +77,14 @@ cd ${BASE_DIR}
 # Validate all markdown files (eg, README.md).
 remark -u validate-links --no-stdout --frail .
 
+if [ $? -eq 0 ]
+then
+  echo "Markup validated succesfully"
+else
+  echo "Markup validated with errors"
+  exit 255
+fi
+
+
 finish_test validate_markdown "Validate Markdown"
 
